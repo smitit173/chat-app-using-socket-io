@@ -9,17 +9,23 @@ app.get('/', (req, res) => {
    res.sendFile(__dirname + '/index.html'); 
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
+io.on('connection', (socket) => {    
+    socket.broadcast.emit('online', 'A user that you may know is now online');
     
     socket.on('disconnect', () => {
         console.log('user disconnected');
     })
     
     socket.on('chat message', (msg) => {
-        console.log('message -> ' + msg);
-        io.emit('chat message', msg);
-        // socket.broadcast.emit('chat message except the sender:', msg)
+        /**
+         * This will emit the event to all the clients INCLUDING the sender
+         */
+        // io.emit('chat message', msg);
+        
+        /**
+         * This will emit the event to all clients EXCLUDING the sender
+         */
+        socket.broadcast.emit('chat message', msg);
     })
 });
 
